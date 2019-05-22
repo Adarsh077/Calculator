@@ -57,7 +57,7 @@ input{
 @media (min-width: 1200px) {
 	table{
 		width: 30%;
-		margin: 2em auto auto auto;
+		margin: 5em auto auto auto!important;
 		font-size: 2em;
 	}
 }
@@ -65,7 +65,7 @@ input{
 @media (min-width: 992px) and (max-width: 1199px) {
 	table{
 		width: 50%;
-		margin: 2em auto auto auto;
+		margin: 5em auto auto auto!important;
 		font-size: 2em;
 	}
 }
@@ -73,7 +73,7 @@ input{
 @media (min-width: 768px) and (max-width: 991px){
 	table{
 		width: 50%;
-		margin: 2em auto auto auto;
+		margin: 4em auto auto auto!important;
 		font-size: 1.5em;
 	}
 }
