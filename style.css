@@ -27,13 +27,13 @@ input{
 .bg-orange{
 	background-color: #fbc531;
 }
-.bg-orange:hover{
+.bg-orange:active{
 	background-color: #ffd769;
 }
 .bg-black{
 	background-color: #2d3436;
 }
-.bg-black:hover{
+.bg-black:active{
 	background-color: #393b3b;
 }
 
