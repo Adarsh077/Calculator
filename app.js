@@ -5,7 +5,7 @@ const buttons = document.querySelectorAll("td button");
 // Global Variables
 let newNum = "";
 let oldNum = "";
-let opt = '';
+let opt = "";
 let clear = false;
 let result;
 
@@ -37,7 +37,7 @@ const calculator = {
     newNum = result;
   },
   displayOpt: ops => {
-		opt = ops;
+    opt = ops;
     oldNum = newNum;
     newNum = "";
     input.value = opt;
@@ -58,13 +58,12 @@ const calculator = {
         return num1 * num2;
     }
   },
-  validate: num =>
-    num === Infinity || isNaN(num) ? "Invalid Expression!" : num
+  validate: num => num === Infinity || isNaN(num) ? "Invalid Expression!" : num.toString(10)
 };
 
 buttons.forEach(button => {
   const value = button.innerHTML;
-  if (value > -1 && value < 10)
+  if (value > -1 && value < 10 || value === '.')
     button.addEventListener("click", () => calculator.displayNum(value));
   else {
     switch (value) {
@@ -75,10 +74,22 @@ buttons.forEach(button => {
         button.addEventListener("click", () => calculator.clearAll());
         break;
       case "=":
-        button.addEventListener("click", () => calculator.equals(oldNum, newNum, opt));
+        button.addEventListener("click", () =>
+          calculator.equals(oldNum, newNum, opt)
+        );
         break;
       default:
         button.addEventListener("click", () => calculator.displayOpt(value));
     }
   }
+});
+
+document.body.addEventListener("keypress", ele => {
+  if (ele.key > -1 && ele.key < 10 || ele.keyCode === 46) {
+		calculator.displayNum(ele.key);
+	}
+  else if (ele.key === "C" || ele.key === 'c') calculator.deleteOne();
+  else if (ele.key === "A" || ele.key === "a") calculator.clearAll();
+  else if (ele.keyCode === 13) calculator.equals(oldNum, newNum, opt);
+  else if(ele.key) calculator.displayOpt(ele.key);
 });
