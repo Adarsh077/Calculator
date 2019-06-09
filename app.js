@@ -14,39 +14,51 @@ const calculator = {
   displayNum: num => {
     if (clear) {
       newNum = num;
-			clear = false;
-			input.value = newNum;
+      clear = false;
+      input.value = newNum;
     } else {
       newNum += num;
-			input.value += num;
-		}
-    
+      input.value += num;
+    }
   },
   deleteOne: () => {
-		newNum = newNum.slice(0, -1);
+    const check = input.value.split("").splice(-1, 1);
+    if (
+      check == "+" ||
+      check == "-" ||
+      check == "*" ||
+      check == "/" ||
+      check == "%"
+    ) {
+      opt = "";
+      newNum = oldNum;
+      oldNum = "";
+    } else {
+      newNum = newNum.slice(0, -1);
+    }
     input.value = input.value.slice(0, -1);
   },
   clearAll: () => {
     newNum = "";
     oldNum = "";
     input.value = "";
-		result = "";
-		display = "";
+    result = "";
+    display = "";
   },
   equals: (oldN, newN, ops) => {
     result = calculator.calculate(oldN, newN, ops);
     result = calculator.validate(result);
-    if(result === 'Invalid Expression!') clear = true;
-		newNum = result;
-		oldNum = "";
+    if (result === "Invalid Expression!") clear = true;
+    newNum = result;
+    oldNum = "";
     input.value = newNum;
   },
   displayOpt: ops => {
-		if(oldNum !== "")  calculator.equals(oldNum, newNum, opt);
-		opt = ops;
+    if (oldNum !== "") calculator.equals(oldNum, newNum, opt);
+    opt = ops;
     oldNum = newNum;
-		newNum = "";
-		input.value += opt;
+    newNum = "";
+    input.value += opt;
   },
   calculate: (num1, num2, ops) => {
     num1 = parseFloat(num1);
@@ -64,8 +76,16 @@ const calculator = {
         return num1 * num2;
     }
   },
-  validate: num =>
-    num === Infinity || isNaN(num) ? "Invalid Expression!" : num.toString(10)
+  validate: num => {
+    if (num === Infinity || isNaN(num)) {
+      ("Invalid Expression!");
+    } else {
+			if(num.toString(10).includes('.')){
+				return num.toFixed(2).toString(10);
+			}
+			return num.toString(10)
+		}
+  }
 };
 
 buttons.forEach(button => {
