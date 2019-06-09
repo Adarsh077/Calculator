@@ -7,40 +7,46 @@ let newNum = "";
 let oldNum = "";
 let opt = "";
 let clear = false;
+let display = "";
 let result;
 
 const calculator = {
   displayNum: num => {
     if (clear) {
       newNum = num;
-      clear = false;
+			clear = false;
+			input.value = newNum;
     } else {
       newNum += num;
-    }
-    input.value = newNum;
+			input.value += num;
+		}
+    
   },
   deleteOne: () => {
-    newNum = newNum.slice(0, -1);
-    input.value = newNum;
+		newNum = newNum.slice(0, -1);
+    input.value = input.value.slice(0, -1);
   },
   clearAll: () => {
     newNum = "";
     oldNum = "";
     input.value = "";
-    result = "";
+		result = "";
+		display = "";
   },
   equals: (oldN, newN, ops) => {
     result = calculator.calculate(oldN, newN, ops);
     result = calculator.validate(result);
-    clear = true;
-    input.value = result;
-    newNum = result;
+    if(result === 'Invalid Expression!') clear = true;
+		newNum = result;
+		oldNum = "";
+    input.value = newNum;
   },
   displayOpt: ops => {
-    opt = ops;
+		if(oldNum !== "")  calculator.equals(oldNum, newNum, opt);
+		opt = ops;
     oldNum = newNum;
-    newNum = "";
-    input.value = opt;
+		newNum = "";
+		input.value += opt;
   },
   calculate: (num1, num2, ops) => {
     num1 = parseFloat(num1);
@@ -58,12 +64,13 @@ const calculator = {
         return num1 * num2;
     }
   },
-  validate: num => num === Infinity || isNaN(num) ? "Invalid Expression!" : num.toString(10)
+  validate: num =>
+    num === Infinity || isNaN(num) ? "Invalid Expression!" : num.toString(10)
 };
 
 buttons.forEach(button => {
   const value = button.innerHTML;
-  if (value > -1 && value < 10 || value === '.')
+  if ((value > -1 && value < 10) || value === ".")
     button.addEventListener("click", () => calculator.displayNum(value));
   else {
     switch (value) {
@@ -85,11 +92,10 @@ buttons.forEach(button => {
 });
 
 document.body.addEventListener("keypress", ele => {
-  if (ele.key > -1 && ele.key < 10 || ele.keyCode === 46) {
-		calculator.displayNum(ele.key);
-	}
-  else if (ele.key === "C" || ele.key === 'c') calculator.deleteOne();
+  if ((ele.key > -1 && ele.key < 10) || ele.keyCode === 46) {
+    calculator.displayNum(ele.key);
+  } else if (ele.key === "C" || ele.key === "c") calculator.deleteOne();
   else if (ele.key === "A" || ele.key === "a") calculator.clearAll();
   else if (ele.keyCode === 13) calculator.equals(oldNum, newNum, opt);
-  else if(ele.key) calculator.displayOpt(ele.key);
+  else if (ele.key) calculator.displayOpt(ele.key);
 });
