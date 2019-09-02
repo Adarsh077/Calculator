@@ -1,121 +1,66 @@
-// DOM elements
-const input = document.getElementById("input");
-const buttons = document.querySelectorAll("td button");
+const inputValues = document.querySelectorAll('.inputButton ');
+const equals = document.querySelector('.equals');
+const clearAll = document.querySelector('.clearAll');
+const inputFeild = document.querySelector('#input')
+const outputFeild = document.querySelector('#output');
 
-// Global Variables
-let newNum = "";
-let oldNum = "";
-let opt = "";
-let clear = false;
-let display = "";
-let result;
+let input = '';
+let output = '';
+const ops = ['-', '+', '/', '*'];
 
-const calculator = {
-  displayNum: num => {
-    if (clear) {
-      newNum = num;
-      clear = false;
-      input.value = newNum;
-    } else {
-      newNum += num;
-      input.value += num;
+const evaluate = (exp, lvl = 0) => {
+    exp = exp.split(ops[lvl]);
+    for (let i in exp) {
+        if (isExpression(exp[i])) {
+            exp[i] = evaluate(exp[i], lvl + 1);
+        }
     }
-  },
-  deleteOne: () => {
-    const check = input.value.split("").splice(-1, 1);
-    if (
-      check == "+" ||
-      check == "-" ||
-      check == "*" ||
-      check == "/" ||
-      check == "%"
-    ) {
-      opt = "";
-      newNum = oldNum;
-      oldNum = "";
-    } else {
-      newNum = newNum.slice(0, -1);
-    }
-    input.value = input.value.slice(0, -1);
-  },
-  clearAll: () => {
-    newNum = "";
-    oldNum = "";
-    input.value = "";
-    result = "";
-    display = "";
-  },
-  equals: (oldN, newN, ops) => {
-    result = calculator.calculate(oldN, newN, ops);
-    result = calculator.validate(result);
-    if (result === "Invalid Expression!") clear = true;
-    newNum = result;
-    oldNum = "";
-    input.value = newNum;
-  },
-  displayOpt: ops => {
-    if (oldNum !== "") calculator.equals(oldNum, newNum, opt);
-    opt = ops;
-    oldNum = newNum;
-    newNum = "";
-    input.value += opt;
-  },
-  calculate: (num1, num2, ops) => {
-    num1 = parseFloat(num1);
-    num2 = parseFloat(num2);
-    switch (ops) {
-      case "+":
-        return num1 + num2;
-      case "-":
-        return num1 - num2;
-      case "/":
-        return num1 / num2;
-      case "%":
-        return num1 % num2;
-      case "*":
-        return num1 * num2;
-    }
-  },
-  validate: num => {
-    if (num === Infinity || isNaN(num)) {
-      ("Invalid Expression!");
-    } else {
-			if(num.toString(10).includes('.')){
-				return num.toFixed(2).toString(10);
-			}
-			return num.toString(10)
-		}
-  }
-};
 
-buttons.forEach(button => {
-  const value = button.innerHTML;
-  if ((value > -1 && value < 10) || value === ".")
-    button.addEventListener("click", () => calculator.displayNum(value));
-  else {
-    switch (value) {
-      case "C":
-        button.addEventListener("click", () => calculator.deleteOne());
-        break;
-      case "A":
-        button.addEventListener("click", () => calculator.clearAll());
-        break;
-      case "=":
-        button.addEventListener("click", () =>
-          calculator.equals(oldNum, newNum, opt)
-        );
-        break;
-      default:
-        button.addEventListener("click", () => calculator.displayOpt(value));
+    for (let i in exp) {
+        exp[i] = parseInt(exp[i]);
     }
-  }
-});
 
-document.body.addEventListener("keypress", ele => {
-  if ((ele.key > -1 && ele.key < 10) || ele.keyCode === 46) {
-    calculator.displayNum(ele.key);
-  } else if (ele.key === "C" || ele.key === "c") calculator.deleteOne();
-  else if (ele.key === "A" || ele.key === "a") calculator.clearAll();
-  else if (ele.keyCode === 13) calculator.equals(oldNum, newNum, opt);
-  else if (ele.key) calculator.displayOpt(ele.key);
+    if (!exp[1]) return exp[0];
+    switch (lvl) {
+        case 0:
+            return exp.reduce((a, b) => parseInt(a) - parseInt(b));
+        case 1:
+            return exp.reduce((a, b) => parseInt(a) + parseInt(b));
+        case 2:
+            return exp.reduce((a, b) => parseInt(a) / parseInt(b));
+        case 3:
+            return exp.reduce((a, b) => parseInt(a) * parseInt(b));
+    }
+}
+
+const isExpression = exp => {
+    for (let i of ops) {
+        if (exp.includes(i)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+const updateUI = (bool) => {
+    inputFeild.value = input;
+    outputFeild.value = bool ? '' : outputFeild.value;
+}
+
+inputValues.forEach(inputButton => {
+    inputButton.addEventListener('click', ele => {
+        const value = ele.target.getAttribute('data-value');
+        input += !value ? ele.target.parentElement.getAttribute('data-value') : value;
+        updateUI();
+    })
+})
+
+clearAll.addEventListener('click', () => {
+    input = '';
+    output = '';
+    updateUI(true);
+})
+
+equals.addEventListener('click', () => {
+    outputFeild.value = evaluate(input)
 });
